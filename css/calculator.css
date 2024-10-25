@@ -1,0 +1,156 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Navigation Bar */
+nav {
+    width: 100%;
+    background-color: #4caf50;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+nav button {
+    background-color: #fff;
+    color: #4caf50;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+nav button:hover {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+/* Calculator Container */
+#calculator {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+}
+
+/* Form Styling */
+form label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    text-align: left;
+}
+
+form input[type="text"], form input[type="number"], form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+form button {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #388e3c;
+}
+
+/* Table Styling */
+#subjectTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#subjectTable th, #subjectTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+#subjectTable th {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+/* CGPA Result */
+#cgpaResult {
+    margin-top: 20px;
+}
+
+#cgpa {
+    font-size: 2.5em;
+    color: #4caf50;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#downloadButton, #printButton {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px 5px;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+#downloadButton:hover, #printButton:hover {
+    background-color: #388e3c;
+}
+
+/* Error Messages */
+.error {
+    color: #e53935;
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #calculator {
+        padding: 20px;
+    }
+
+    nav button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    form input[type="text"], form input[type="number"], form select, form button {
+        font-size: 14px;
+    }
+
+    #cgpa {
+        font-size: 2em;
+    }
+}
