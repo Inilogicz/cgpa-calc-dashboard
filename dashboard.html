@@ -5,29 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css"> 
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="js/dashboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>User Dashboard</h1>
-        <div id="profile">
-            <p id="name">Name: N/A</p>
-            <p id="matriculation-number">Matriculation Number: N/A</p>
-            <p id="department">Department: N/A</p>
-            <p id="session">Session: N/A</p>
+        <h1>Student Dashboard</h1>
+        <div id="profile" class="profile-card">
+            <h2 id="name"></h2>
+            <h4 id="matriculation-number"></h4>
+            <h4 id="department"></h4>
+            <h4 id="session"></h4>
+            <h4 id="analytics"></h4>
         </div>
-        <div class="chart-container">
+        <div class="chart-container" id="chartContainer" style="display: none;">
             <canvas id="performanceChart"></canvas>
         </div>
         
         <div class="navigation">
-            <button id="history-button" onclick="window.location.href='history.html'">View History</button>
-            <button id="calculator-button" onclick="window.location.href='calculator.html'">Go to Calculator</button>
+            <button id="history-button" class="nav-btn" onclick="window.location.href='history.html'">View History</button>
+            <button id="calculator-button" class="nav-btn" onclick="window.location.href='calculator.html'">Go to Calculator</button>
         </div>
 
-        <button id="logout-button">Logout</button>
+        <button id="logout-button" class="logout-btn">Logout</button>
 
         <!-- History table to display CGPA history -->
         <h2>CGPA History</h2>

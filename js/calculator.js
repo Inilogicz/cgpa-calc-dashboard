@@ -1,11 +1,11 @@
 // Import Firebase configuration and functions
-import { firebaseConfig, db, auth, onAuthStateChanged } from '/firebase-config.js';
+import { firebaseConfig, db, auth } from '/firebase-config.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 
-// Initialize Firebase (optional since it's done in firebase-config.js, but can be kept for clarity)
-const app = initializeApp(firebaseConfig); // This line can also be removed if desired
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // Variables to store subjects and grades
 let subjects = [];
@@ -15,9 +15,9 @@ const gradePoints = { "A": 5, "B": 4, "C": 3, "D": 2, "E": 1, "F": 0 };
 
 // Add subject to table
 function addSubject() {
-    const subject = document.getElementById('subject').value;
+    const subject = document.getElementById('subject').value.trim();
     const grade = document.getElementById('grade').value;
-    const unit = parseInt(document.getElementById('unit').value);
+    const unit = parseInt(document.getElementById('unit').value, 10);
 
     if (!subject || !grade || !unit) {
         document.getElementById('inputError').textContent = "Please fill all fields correctly.";
@@ -26,6 +26,7 @@ function addSubject() {
 
     subjects.push({ subject, grade, unit });
     displaySubjects();
+    document.getElementById('inputError').textContent = ""; // Clear error message
 }
 
 // Display subjects in the table
@@ -52,29 +53,33 @@ function calculateCGPA() {
         totalUnits += unit;
     });
 
-    const cgpa = totalUnits ? (totalPoints / totalUnits).toFixed(2) : "0.00";
+    const cgpa = totalUnits ? Math.min((totalPoints / totalUnits).toFixed(2), 5.00) : "0.00"; // Ensure CGPA does not exceed 5.0
     document.getElementById('cgpa').textContent = cgpa;
+
+    // Get selected semester from dropdown
+    const semester = document.getElementById('semester').value;
 
     // Show download and print buttons if CGPA calculated
     document.getElementById('downloadButton').style.display = 'block';
     document.getElementById('printButton').style.display = 'block';
 
-    saveHistory(cgpa); // Save CGPA to Firestore
+    saveHistory(cgpa, semester); // Pass semester to saveHistory function
+    updateChart(cgpa); // Call to update the chart with the new CGPA
 }
 
 // Save CGPA calculation to Firestore
-async function saveHistory(cgpa) {
+async function saveHistory(cgpa, semester) {
     const user = auth.currentUser;
     if (user) {
         try {
             await addDoc(collection(db, "users", user.uid, "cgpaHistory"), {
                 subjects,
                 cgpa,
+                semester,
                 timestamp: new Date()
             });
             alert("CGPA record saved successfully!");
         } catch (error) {
-            // Log error message and display alert
             console.error("Error saving CGPA history:", error);
             alert("Error saving CGPA history: " + error.message);
         }
@@ -96,6 +101,8 @@ function resetForm() {
     document.getElementById('cgpaForm').reset();
     displaySubjects();
     document.getElementById('cgpa').textContent = "0.00";
+    document.getElementById('downloadButton').style.display = 'none';
+    document.getElementById('printButton').style.display = 'none';
 }
 
 // Download CGPA report
@@ -104,38 +111,58 @@ function downloadCGPA() {
     const doc = new jsPDF();
     doc.text("CGPA Report", 10, 10);
     subjects.forEach((item, i) => {
-        doc.text(`${i + 1}. ${item.subject} - ${item.grade} (${item.unit} units)`, 10, 20 + i * 10);
+        doc.text(`${i + 1}. ${item.subject} - Grade: ${item.grade} - Unit: ${item.unit}`, 10, 20 + (i * 10));
     });
-    doc.text(`CGPA: ${document.getElementById('cgpa').textContent}`, 10, 20 + subjects.length * 10);
-    doc.save("CGPA_Report.pdf");
+    doc.text(`CGPA: ${document.getElementById('cgpa').textContent}`, 10, 20 + (subjects.length * 10) + 10);
+    doc.save("cgpa_report.pdf");
 }
 
-// Navigation functions
-function goToDashboard() {
-    window.location.href = "dashboard.html";
+// Update chart with CGPA
+function updateChart(cgpa) {
+    const ctx = document.getElementById('cgpaChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['CGPA'],
+            datasets: [{
+                label: 'Your CGPA',
+                data: [cgpa],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 5
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5 // Maximum CGPA limit
+                }
+            }
+        }
+    });
 }
 
-function viewHistory() {
-    window.location.href = "history.html";
-}
-
+// Logout function
 function logout() {
     signOut(auth).then(() => {
-        window.location.href = "login.html";
+        console.log("User signed out successfully.");
+        window.location.href = 'index.html'; // Redirect to login page
     }).catch((error) => {
         console.error("Error signing out:", error);
     });
 }
 
-// Ensure user is logged in
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        alert("Please log in to access the calculator.");
-        window.location.href = "login.html";
-    }
-});
+// Navigation to dashboard
+function goToDashboard() {
+    window.location.href = 'dashboard.html'; // Redirect to the dashboard
+}
 
-// Make functions accessible globally
+// Navigation to history
+function viewHistory() {
+    window.location.href = 'history.html'; // Redirect to history page
+}
+
 window.addSubject = addSubject;
 window.removeSubject = removeSubject;
 window.resetForm = resetForm;
@@ -143,4 +170,4 @@ window.downloadCGPA = downloadCGPA;
 window.goToDashboard = goToDashboard;
 window.viewHistory = viewHistory;
 window.logout = logout;
-window.calculateCGPA = calculateCGPA; // Expose calculateCGPA to global scope
+window.calculateCGPA = calculateCGPA; 
